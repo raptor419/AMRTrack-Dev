@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+<html>
+    {% include 'dashboard/base.html' %}
+
+    <body>
+    <div class="container">
+    	{% if user.is_authenticated %}
+        	<h1>Antibiogram Dashboard</h1>
+        	<strong>{{ boldmessage }}</strong><br />
+        {% else %}
+        	<h1>Antibiogram Dashboard</h1>
+        	<strong>{{ boldmessage }}</strong><br />
+        	<h1> Login/Register to access Antibiogram Dashboard </h1>
+        	<a href="/dashboard/login/"><button class="btn btn-lg btn-primary" type="submit">Login</button></a>
+        	<a href="/dashboard/register/"><button class="btn btn-lg btn-primary" type="submit">Register</button></a>
+        {% endif %}
+    	<br>
+	</div>
+    </body>
+</html>
