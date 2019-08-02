@@ -1,11 +1,13 @@
 # Django 
-from dashboard.forms import UserForm
+from .forms import *
 # Models
-from dashboard.models import *
+from .models import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+
+from django.views.generic import CreateView
 
 from .scripts.googlelogin import *
 
@@ -148,6 +150,33 @@ def active(request):
                 user = authenticate(username=username + '_google', password='password')
                 login(request, user)
     else:
+        created = True
         if request.GET.items():
             user = User.objects.get(username=request.user.username)
-    return render(request, 'dashboard/active.html', {})
+        input_form = InputDataForm(data=request.POST)
+        input_form.fields['ams'].choices = [(x, x) for x in ANTIMICROBIALS]
+        input_form.fields['site'].choices = [(x, x) for x in SITES]
+        input_form.fields['col'].choices = [(x, x) for x in COLLTYPES]
+        input_form.fields['org'].choices = [(x, x) for x in ORGANISMS]
+        if input_form.is_valid():
+            pass
+        else:
+            print(input_form.errors)
+
+    return render(request, 'dashboard/active.html', {'form': input_form, 'registered': created})
+
+
+def pathtestcreate(request):
+    created = False
+    if request.method == 'POST':
+        path_form = PathTestForm(data=request.POST)
+        if path_form.is_valid():
+            path = path_form.save()
+            created = True
+            return HttpResponseRedirect('/dashboard/addpath/')
+        else:
+            print(path_form.errors)
+    else:
+        path_form = PathTestForm()
+
+    return render(request, 'dashboard/addpath.html', {'form': path_form, 'registered': created})

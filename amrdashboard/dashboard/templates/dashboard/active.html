@@ -2,12 +2,33 @@
 
 <html>
 {% include 'dashboard/base.html' %}
-
+<style>
+    div.scroll1 {
+        overflow: scroll;
+        height: 500px;
+}
+</style>
 <body>
 <div class="container">
     {% if user.is_authenticated %}
     <h1>Antibiogram Dashboard</h1>
-    <strong>{{ boldmessage }}</strong><br/>
+    {% load crispy_forms_tags %}
+    {% block content %}
+    <div class='container'>
+        <br>
+         {% csrf_token %}
+        {{ form.keywords|as_crispy_field }}
+        <div class="row">
+          <div class="row">
+          <div class="col-md-3">{{ form.site|as_crispy_field }}{{ form.org|as_crispy_field }}</div>
+          </div>
+          <div class="col-md-3">{{ form.col|as_crispy_field }}</div>
+        </div>
+
+
+        <button type="submit" class="btn btn-success">Generate Sensitivity Table</button>
+    </div>
+    {% endblock %}
     {% else %}
     <h1>Antibiogram Dashboard</h1>
     <strong>{{ boldmessage }}</strong><br/>
