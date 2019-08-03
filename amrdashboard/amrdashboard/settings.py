@@ -38,7 +38,13 @@ INSTALLED_APPS = [
     'dashboard',
     'bootstrapform',
     'crispy_forms',
+    'bootstrap_datepicker_plus',
+    'bootstrap4',
 ]
+
+BOOTSTRAP4 = {
+    'include_jquery': True,
+}
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
 

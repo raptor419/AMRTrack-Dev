@@ -59,7 +59,6 @@ def index(request):
     else:
         if request.GET.items():
             user = User.objects.get(username=request.user.username)
-        return HttpResponseRedirect('/dashboard/active/')
 
     context = {'hello': 'world'}
     return render(request, 'dashboard/index.html', context)
@@ -95,7 +94,7 @@ def user_login(request):
         if user:
             if user.is_active:
                 login(request, user)
-                return HttpResponseRedirect('/dashboard/active/')
+                return HttpResponseRedirect('/')
             else:
                 return HttpResponse("Your Dashboard account is disabled.")
         else:

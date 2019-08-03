@@ -1,14 +1,27 @@
 <!DOCTYPE html>
-
 <html>
 {% include 'dashboard/base.html' %}
 <style>
     div.scroll1 {
         overflow: scroll;
-        height: 500px;
+        height: 35em;
+}
+    div.scroll2 {
+        overflow: scroll;
+        height: 20em;
+}
+    div.scroll3 {
+        overflow: scroll;
+        height: 15em;
 }
 </style>
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+</head>
 <body>
+{% load bootstrap4 %}
+{% bootstrap_javascript jquery='full' %}  {# Embed Bootstrap JS+jQuery #}
+{{ form.media }}            {# Adds date-picker required JS and CSS #}
 <div class="container">
     {% if user.is_authenticated %}
     <h1>Antibiogram Dashboard</h1>
@@ -19,20 +32,42 @@
          {% csrf_token %}
         {{ form.keywords|as_crispy_field }}
         <div class="row">
-          <div class="row">
-          <div class="col-md-3">{{ form.site|as_crispy_field }}{{ form.org|as_crispy_field }}</div>
-          </div>
-          <div class="col-md-3">{{ form.col|as_crispy_field }}</div>
+            <div class="col-md-3 scroll1">{{ form.ams|as_crispy_field }}</div>
+            <div class="col-md-3">
+                <div class="scroll3"> {{ form.site|as_crispy_field }}</div>
+                <div class="scroll2">{{ form.org|as_crispy_field }}</div>
+            </div>
+            <div class="col-md-3 scroll1">{{ form.col|as_crispy_field }}</div>
+            {% block extrahead %}   {# Extra Resources Start #}
+            <div class="col-md-3" style="padding-left: 2em;">
+            <b>
+            <div class="row">
+                Enter Start Date
+                {{ form.startdate }}
+            </div>
+                </br>
+            <div class="row">
+                Enter End Date
+                {{ form.enddate }}
+            </div>
+            </b>
+            </div>
+
+
+            {% endblock %}          {# Extra Resources End #}
+
+
         </div>
 
 
+    <br>
         <button type="submit" class="btn btn-success">Generate Sensitivity Table</button>
     </div>
     {% endblock %}
     {% else %}
     <h1>Antibiogram Dashboard</h1>
     <strong>{{ boldmessage }}</strong><br/>
-    <h1> Login/Register to access Antibiogram Dashboard </h1>
+    <h1> Login/Register to access AMR Track Suite </h1>
     <a href="/dashboard/login/">
         <button class="btn btn-lg btn-primary" type="submit">Login</button>
     </a>

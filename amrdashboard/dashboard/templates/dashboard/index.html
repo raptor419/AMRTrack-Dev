@@ -2,29 +2,98 @@
 
 <html>
 {% include 'dashboard/base.html' %}
+<style>
+    .image {
+   position: relative;
+   width: 100%; /* for IE 6 */
+}
 
+    .text-block {
+   position: absolute;
+   top: 200px;
+   left: 0;
+   width: 100%;
+}
+</style>
 <body>
 <div class="container">
     {% if user.is_authenticated %}
-    <h1>Antibiogram Dashboard</h1>
+    <h1>AMR Track</h1>
     <strong>{{ boldmessage }}</strong><br/>
+    <div class="container">
+        <a href="/dashboard/active/">
+        <div class="col-md-3 container">
+            <img src="/static/img/placeholder.jpg"style="width:100%;">
+            <div class="centered" style="text-align:center;">Antibiogram</div>
+        </div>
+        </a>
+        <a href="/dashboard/active/">
+        <div class="col-md-3 container">
+            <img src="/static/img/placeholder.jpg"style="width:100%;">
+            <div class="centered" style="text-align:center;">Statistical Inference</div>
+        </div>
+        </a>
+        <a href="/dashboard/active/">
+        <div class="col-md-3 container">
+            <img src="/static/img/placeholder.jpg"style="width:100%;">
+            <div class="centered" style="text-align:center;">ML Inference</div>
+        </div>
+        </a>
+        <a href="/dashboard/active/">
+        <div class="col-md-3 ">
+            <img src="/static/img/placeholder.jpg"style="width:100%;">
+            <div class="centered" style="text-align:center;">Manage Test Data</div>
+            </div>
+        </div>
+        </a>
+
+    </div>
     {% else %}
-    <h1>Antibiogram Dashboard</h1>
+    <h1>AMR Track</h1>
     <strong>{{ boldmessage }}</strong><br/>
-    <h1> Login/Register to access Antibiogram Dashboard </h1>
+    <h2> Login/Register to access AMR Track Suite </h2>
+    </br>
+    <div class="row" >
+        <div class="col-sm-3">
     <a href="/dashboard/login/">
         <button class="btn btn-lg btn-primary" type="submit">Login</button>
-    </a>
+    </a></div>
+            <div class="col-sm-3">
     <a href="/dashboard/register/">
         <button class="btn btn-lg btn-primary" type="submit">Register</button>
-    </a>
-    </br>    </br>
-    <div class="form-signin col-sm-4">
+    </a></div>
+
+    <div class="col-sm-3">
         <a class="btn btn-block btn-social btn-google" href="/dashboard/google_login/">
             <i class="fa fa-google"></i>
             Sign in with Google
         </a>
     </div>
+    </div>
+    </br>
+        <div class="col-md-13 container center-block">
+            <img src="/static/img/demo.jpg"style="width: 50%">
+            <div class="centered" style="text-align:center;"></div>
+        </div>
+    <div class="container">
+        <a href="/dashboard/active/">
+        <div class="col-md-3 container center-block">
+            <img src="/static/img/logo1.png"style="height:10em; width:10em;">
+            <div class="centered" style="text-align:center;"></div>
+        </div>
+        </a>
+        <a href="/dashboard/active/">
+        <div class="col-md-3 container center-block">
+            <img src="/static/img/logo2.png"style="height:10em; width:10em;">
+            <div class="centered" style="text-align:center;"></div>
+        </div>
+        </a>
+        <a href="/dashboard/active/">
+        <div class="col-md-3 container center-block">
+            <img src="/static/img/logo3.png"style="height:10em; width:10em;">
+            <div class="centered" style="text-align:center;"></div>
+        </div>
+        </a>
     {% endif %}
     <br>
 </div>
