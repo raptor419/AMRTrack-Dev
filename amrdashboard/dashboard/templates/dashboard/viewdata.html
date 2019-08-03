@@ -18,36 +18,10 @@
 <body>
 <div class="container">
     {% if user.is_authenticated %}
-    <h1>AMR Track</h1>
-    <strong>{{ boldmessage }}</strong><br/>
-    <div class="container">
-        <a href="/dashboard/active/">
-        <div class="col-md-3 container">
-            <img src="/static/img/placeholder.jpg"style="width:100%;">
-            <div class="centered" style="text-align:center;">Antibiogram</div>
-        </div>
-        </a>
-        <a href="/dashboard/active/">
-        <div class="col-md-3 container">
-            <img src="/static/img/placeholder.jpg"style="width:100%;">
-            <div class="centered" style="text-align:center;">Statistical Inference</div>
-        </div>
-        </a>
-        <a href="/dashboard/active/">
-        <div class="col-md-3 container">
-            <img src="/static/img/placeholder.jpg"style="width:100%;">
-            <div class="centered" style="text-align:center;">ML Inference</div>
-        </div>
-        </a>
-        <a href="/dashboard/viewdata/">
-        <div class="col-md-3 ">
-            <img src="/static/img/placeholder.jpg"style="width:100%;">
-            <div class="centered" style="text-align:center;">Manage Test Data</div>
-            </div>
-        </div>
-        </a>
+    <h1>Database Data</h1>
+    <iframe id="encoder_iframe" height=100% width="100%" src="{% url 'viewdataraw' %}">
+    </iframe>
 
-    </div>
     {% else %}
     <h1>AMR Track</h1>
     <strong>{{ boldmessage }}</strong><br/>

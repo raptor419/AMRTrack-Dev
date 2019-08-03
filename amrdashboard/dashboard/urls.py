@@ -8,4 +8,6 @@ urlpatterns = [
     path('active/', views.active, name='active'),
     path('google_login/', views.google_login, name='active'),
     path('addpath/', views.pathtestcreate, name='addpath'),
+    path('viewdata/', views.view_data, name='viewdata'),
+    path('viewdataraw/', views.view_data_raw, name='viewdataraw'),
 ]

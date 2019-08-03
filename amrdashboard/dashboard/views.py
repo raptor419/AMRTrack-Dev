@@ -10,6 +10,7 @@ from django.shortcuts import render
 from django.views.generic import CreateView
 
 from .scripts.googlelogin import *
+from .scripts.biotable import *
 
 # Python
 
@@ -179,3 +180,12 @@ def pathtestcreate(request):
         path_form = PathTestForm()
 
     return render(request, 'dashboard/addpath.html', {'form': path_form, 'registered': created})
+
+def view_data_raw(request):
+    df = getdatatable()
+    return HttpResponse(df.to_html())
+
+def view_data(request):
+    return render(request, 'dashboard/viewdata.html')
+
+
