@@ -27,16 +27,17 @@ class PathTestForm(forms.ModelForm):
 
 
 class InputDataForm(forms.Form):
-    keywords = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Keywords'}),required=False)
+    keywords = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Keywords'}), required=False)
     ams = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, label="Select Antimicrobial", required=False)
-    site = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, label="Select Collection Location", required=False)
+    site = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, label="Select Collection Location",
+                                     required=False)
     org = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, label="Select Organisms", required=False)
     col = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple, label="Select Collection Type", required=False)
     startdate = forms.DateField(label='Enter end Date', widget=DatePickerInput, required=False)
     enddate = forms.DateField(label='Enter Start Date', widget=DatePickerInput, required=False)
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super(InputDataForm,self).__init__(*args, **kwargs)
         self.helper = FormHelper()
-        self.helper.form_method = 'post'
-        self.helper.add_input(Submit('submit', 'Save person'))
+        self.helper.add_input(Submit('submit', 'Generate Sensitivity Table', css_class='btn btn-success'))
+        self.helper.form_method = 'POST'

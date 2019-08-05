@@ -10,4 +10,5 @@ urlpatterns = [
     path('addpath/', views.pathtestcreate, name='addpath'),
     path('viewdata/', views.view_data, name='viewdata'),
     path('viewdataraw/', views.view_data_raw, name='viewdataraw'),
+    path('fullabg/', views.complete_antibiogram, name='fullabg'),
 ]

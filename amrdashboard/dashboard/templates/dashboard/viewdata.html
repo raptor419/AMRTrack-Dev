@@ -19,7 +19,7 @@
 <div class="container">
     {% if user.is_authenticated %}
     <h1>Database Data</h1>
-    <iframe id="encoder_iframe" height=100% width="100%" src="{% url 'viewdataraw' %}">
+    <iframe id="encoder_iframe" height="100%" width="100%" src="{% url 'viewdataraw' %}">
     </iframe>
 
     {% else %}

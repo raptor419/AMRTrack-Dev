@@ -1,16 +1,15 @@
-# Django 
-from .forms import *
-# Models
-from .models import *
+# Django
+import django_tables2 as tables
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 
-from django.views.generic import CreateView
-
-from .scripts.googlelogin import *
+from .forms import *
+# Models
+from .models import *
 from .scripts.biotable import *
+from .scripts.googlelogin import *
 
 # Python
 
@@ -23,7 +22,6 @@ GOOGLE_API_APP_SECRET = ''
 
 getGoogle = GoogleLogin(GOOGLE_API_APP_ID, GOOGLE_API_APP_SECRET)
 profile_track = None
-
 
 def index(request):
     print("index: " + str(request.user))
@@ -151,19 +149,51 @@ def active(request):
                 login(request, user)
     else:
         created = True
+        table = False
         if request.GET.items():
             user = User.objects.get(username=request.user.username)
-        input_form = InputDataForm(data=request.POST)
-        input_form.fields['ams'].choices = [(x, x) for x in ANTIMICROBIALS]
-        input_form.fields['site'].choices = [(x, x) for x in SITES]
-        input_form.fields['col'].choices = [(x, x) for x in COLLTYPES]
-        input_form.fields['org'].choices = [(x, x) for x in ORGANISMS]
-        if input_form.is_valid():
-            pass
-        else:
-            print(input_form.errors)
+        if request.method == 'POST':
+            input_form = InputDataForm(data=request.POST)
+            input_form.fields['ams'].choices = [(x, x) for x in ANTIMICROBIALS]
+            input_form.fields['site'].choices = [(x, x) for x in SITES]
+            input_form.fields['col'].choices = [(x, x) for x in COLLTYPES]
+            input_form.fields['org'].choices = [(x, x) for x in ORGANISMS]
+            if input_form.is_valid():
+                if not input_form.cleaned_data['ams']:
+                    input_form.cleaned_data['ams'] = ANTIMICROBIALS
+                if not input_form.cleaned_data['site']:
+                    input_form.cleaned_data['site'] = SITES
+                if not input_form.cleaned_data['col']:
+                    input_form.cleaned_data['col'] = COLLTYPES
+                if not input_form.cleaned_data['org']:
+                    input_form.cleaned_data['org'] = ORGANISMS
+                if not input_form.cleaned_data['startdate']:
+                    input_form.cleaned_data['startdate'] = '01-01-1900'
+                if not input_form.cleaned_data['enddate']:
+                    input_form.cleaned_data['enddate'] = '01-01-2100'
+                print(input_form.cleaned_data['ams'])
+                print(input_form.cleaned_data['site'])
+                print(input_form.cleaned_data['col'])
+                print(input_form.cleaned_data['org'])
+                print(input_form.cleaned_data['startdate'])
+                print(input_form.cleaned_data['enddate'])
+                table = generate_anitbiogram(ams=input_form.cleaned_data['ams'], organisms=input_form.cleaned_data['org'],
+                                     colltypes=input_form.cleaned_data['col'], sites=input_form.cleaned_data['site'],
+                                     startdate=input_form.cleaned_data['startdate'], enddate=input_form.cleaned_data['enddate'])
+                # print(table)
+                return render(request, 'dashboard/active.html',
+                              {'form': input_form, 'registered': created, 'table': table})
 
-    return render(request, 'dashboard/active.html', {'form': input_form, 'registered': created})
+            else:
+                print(input_form.errors)
+        else:
+            input_form = InputDataForm()
+            input_form.fields['ams'].choices = [(x, x) for x in ANTIMICROBIALS]
+            input_form.fields['site'].choices = [(x, x) for x in SITES]
+            input_form.fields['col'].choices = [(x, x) for x in COLLTYPES]
+            input_form.fields['org'].choices = [(x, x) for x in ORGANISMS]
+
+    return render(request, 'dashboard/active.html', {'form': input_form, 'registered': created, 'table': table})
 
 
 def pathtestcreate(request):
@@ -181,11 +211,69 @@ def pathtestcreate(request):
 
     return render(request, 'dashboard/addpath.html', {'form': path_form, 'registered': created})
 
+
 def view_data_raw(request):
     df = getdatatable()
-    return HttpResponse(df.to_html())
+    df['date'] = pd.to_datetime(df['date'])
+    fields = ['testid', 'collsite', 'sampletype', 'organism'] + ANTIMICROBIALS
+    df = df[df.organism.isin(ORGANISMS) & df.sampletype.isin(COLLTYPES) & df.collsite.isin(SITES)][fields]
+    gb = df.groupby(['organism', 'sampletype', 'collsite'])
+    tdf = gb.apply(lambda _df: _df.sort_values(by=['testid']))
+    print(tdf)
+    return HttpResponse(tdf.to_html())
+
+
+def complete_antibiogram(request):
+    df = getdatatable()
+    df['date'] = pd.to_datetime(df['date'])
+    fields = ['testid', 'collsite', 'sampletype', 'organism'] + ANTIMICROBIALS
+    df = df[df.organism.isin(ORGANISMS) & df.sampletype.isin(COLLTYPES) & df.collsite.isin(SITES)][fields]
+    tdf = df.groupby(['organism'])
+    # tdf = tdf.apply(lambda _tdf: _tdf.sort_values(by=['testid']))
+    # tdf = tdf[ANTIMICROBIALS]
+    # # tdf = tdf.apply(pd.value_counts)
+    abg = pd.DataFrame(index=ORGANISMS, columns=ANTIMICROBIALS)
+    abg = abg.fillna('?')
+    for amr in ANTIMICROBIALS:
+        cdf = tdf[amr].value_counts().unstack(fill_value=0)
+        for org in cdf.index.values:
+            # print(amr, org)
+            abg.at[org, amr] = getcdfat(cdf, org, 1) / (
+                        getcdfat(cdf, org, 1) + getcdfat(cdf, org, 0) + getcdfat(cdf, org, 2)) * 100.0
+    abg = abg.fillna('?')
+    tdf = tdf.apply(lambda _tdf: _tdf.sort_values(by=['testid']))
+    return HttpResponse(abg.to_html())
+
+
+def generate_anitbiogram(organisms, colltypes, sites, ams, startdate, enddate):
+    df = getdatatable()
+    df['date'] = pd.to_datetime(df['date'])
+    fields = ['testid', 'collsite', 'sampletype', 'organism'] + ams
+    df = df[df.organism.isin(organisms) & df.sampletype.isin(colltypes) & df.collsite.isin(sites) & (
+            (df['date'] > startdate) & (df['date'] <= enddate))][fields]
+    tdf = df.groupby(['organism'])
+    # tdf = tdf.apply(lambda _tdf: _tdf.sort_values(by=['testid']))
+    # tdf = tdf[ANTIMICROBIALS]
+    # # tdf = tdf.apply(pd.value_counts)
+    abg = pd.DataFrame(index=organisms, columns=ams)
+    abg = abg.fillna('?')
+    for amr in ams:
+        cdf = tdf[amr].value_counts().unstack(fill_value=0)
+        for org in cdf.index.values:
+            # print(amr, org)
+            abg.at[org, amr] = getcdfat(cdf, org, 1) / (
+                    getcdfat(cdf, org, 1) + getcdfat(cdf, org, 0) + getcdfat(cdf, org, 2)) * 100.0
+    abg = abg.fillna('?')
+    tdf = tdf.apply(lambda _tdf: _tdf.sort_values(by=['testid']))
+    return (abg.to_html())
+
 
 def view_data(request):
     return render(request, 'dashboard/viewdata.html')
 
 
+def getcdfat(cdf, a, b):
+    try:
+        return cdf.at[a, b]
+    except KeyError:
+        return 0
