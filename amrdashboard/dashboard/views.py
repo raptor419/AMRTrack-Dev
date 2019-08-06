@@ -136,7 +136,7 @@ def active(request):
                     new_user.save()
 
                     try:
-                        profle = GoogleProfile.objects.get(user=new_user.id)
+                        profile = GoogleProfile.objects.get(user=new_user.id)
                         profile.access_token = getGoogle.access_token
                     except:
                         profile = GoogleProfile()
@@ -150,6 +150,7 @@ def active(request):
     else:
         created = True
         table = False
+        json = False
         if request.GET.items():
             user = User.objects.get(username=request.user.username)
         if request.method == 'POST':
@@ -181,8 +182,13 @@ def active(request):
                                      colltypes=input_form.cleaned_data['col'], sites=input_form.cleaned_data['site'],
                                      startdate=input_form.cleaned_data['startdate'], enddate=input_form.cleaned_data['enddate'])
                 # print(table)
+                table.to_csv('data.csv')
+                json = table.to_json(orient="split")
+                tablehtml = table.to_html()
+                # json = table.to_json(orient="split")
+                csv = pd.read_csv("bargraph.csv").to_json()
                 return render(request, 'dashboard/active.html',
-                              {'form': input_form, 'registered': created, 'table': table})
+                              {'form': input_form, 'registered': created, 'table': tablehtml, 'json':json, 'csv':csv})
 
             else:
                 print(input_form.errors)
@@ -193,7 +199,7 @@ def active(request):
             input_form.fields['col'].choices = [(x, x) for x in COLLTYPES]
             input_form.fields['org'].choices = [(x, x) for x in ORGANISMS]
 
-    return render(request, 'dashboard/active.html', {'form': input_form, 'registered': created, 'table': table})
+    return render(request, 'dashboard/active.html', {'form': input_form, 'registered': created, 'table': table,'json':json})
 
 
 def pathtestcreate(request):
@@ -239,10 +245,11 @@ def complete_antibiogram(request):
         for org in cdf.index.values:
             # print(amr, org)
             abg.at[org, amr] = getcdfat(cdf, org, 1) / (
-                        getcdfat(cdf, org, 1) + getcdfat(cdf, org, 0) + getcdfat(cdf, org, 2)) * 100.0
+                        getcdfat(cdf, org, 1) + getcdfat(cdf, org, 0) + getcdfat(cdf, org, 2))
     abg = abg.fillna('?')
+    print(abg)
     tdf = tdf.apply(lambda _tdf: _tdf.sort_values(by=['testid']))
-    return HttpResponse(abg.to_html())
+    return HttpResponse(abg)
 
 
 def generate_anitbiogram(organisms, colltypes, sites, ams, startdate, enddate):
@@ -256,16 +263,19 @@ def generate_anitbiogram(organisms, colltypes, sites, ams, startdate, enddate):
     # tdf = tdf[ANTIMICROBIALS]
     # # tdf = tdf.apply(pd.value_counts)
     abg = pd.DataFrame(index=organisms, columns=ams)
-    abg = abg.fillna('?')
+    abg = abg.fillna('null')
     for amr in ams:
         cdf = tdf[amr].value_counts().unstack(fill_value=0)
         for org in cdf.index.values:
             # print(amr, org)
-            abg.at[org, amr] = getcdfat(cdf, org, 1) / (
-                    getcdfat(cdf, org, 1) + getcdfat(cdf, org, 0) + getcdfat(cdf, org, 2)) * 100.0
-    abg = abg.fillna('?')
+            try:
+                abg.at[org, amr] = getcdfat(cdf, org, 1) / (
+                    getcdfat(cdf, org, 1) + getcdfat(cdf, org, 0) + getcdfat(cdf, org, 2))*100.0
+            except ZeroDivisionError:
+                abg.at[org, amr] = 'null'
+    abg = abg.fillna('null')
     tdf = tdf.apply(lambda _tdf: _tdf.sort_values(by=['testid']))
-    return (abg.to_html())
+    return (abg)
 
 
 def view_data(request):

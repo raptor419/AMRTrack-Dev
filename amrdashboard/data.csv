@@ -1,0 +1,5 @@
+,meropenem,netilmicin,nitrofurantoin,penicillin,piperacillin_tazobactum,rifampicin,teicoplanin
+enterobacter,0.0,0.0,0.0,null,0.0,null,null
+enterococcus,null,null,0.0,100.0,null,null,100.0
+escherichia,44.44444444444444,44.44444444444444,66.66666666666666,null,100.0,null,null
+klebsiella,87.5,88.88888888888889,50.0,null,77.77777777777779,null,null

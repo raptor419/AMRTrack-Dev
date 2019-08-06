@@ -36,10 +36,17 @@ table td {
 }
 </style>
 <head>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="http://d3js.org/d3.v3.js"></script>
+    <script src="http://d3js.org/colorbrewer.v1.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="/static/js/heatmap.js"></script>
+    <script src="/static/js/bargraph.js"></script>
+    <link rel="stylesheet" href="/static/css/heatmap.css" />
+
 </head>
 <body>
 {% load bootstrap4 %}
+{% load static %}
 {% load django_tables2 %}
 {% bootstrap_javascript jquery='full' %}  {# Embed Bootstrap JS+jQuery #}
 {{ form.media }}            {# Adds date-picker required JS and CSS #}
@@ -89,8 +96,40 @@ table td {
     {% endblock %}
     <br>
     <div>
-    {{ table | safe }}
+        Order:
+
+        Palette:
+        <select id="palette">
+          <option value="RdYlGn" selected>RdYlGn</option>
+          <option value="Spectral">Spectral</option>
+          <option value="RdYlBu">RdYlBu</option>
+          <option value="RdGy">RdGy</option>
+          <option value="RdBu">RdBu</option>
+          <option value="PiYG">PiYG</option>
+          <option value="PRGn">PRGn</option>
+          <option value="BrBG">BrBG</option>
+          <option value="PuOr">PuOr</option>
+        </select>
+    <script>
+        var mystring = '{{json|safe}}';
+        var root = JSON.parse(mystring);
+        console.log(root);
+
+        $(document).ready(function() {
+	heatmap_display(root, "#heatmap", "RdYlGn");
+    });
+    </script>
     </div>
+     <script>var mystring = '{{csv|safe}}';
+        var j2 = JSON.parse(mystring);
+        console.log(j2);
+        $(document).ready(function() {
+	bargraph_display(j2, "#bargraph");
+    });
+    </script>
+    </div>
+    <div id="heatmap"></div>
+    <div id="bargraph"></div>
     {% else %}
     <h1>Antibiogram Dashboard</h1>
     <strong>{{ boldmessage }}</strong><br/>

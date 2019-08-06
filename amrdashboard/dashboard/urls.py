@@ -1,5 +1,10 @@
 from dashboard import views
+from django.conf import settings
+from django.views.static import serve
 from django.urls import path
+from django.conf.urls import url
+
+
 
 urlpatterns = [
     path('register/', views.register, name='register'),
@@ -11,4 +16,5 @@ urlpatterns = [
     path('viewdata/', views.view_data, name='viewdata'),
     path('viewdataraw/', views.view_data_raw, name='viewdataraw'),
     path('fullabg/', views.complete_antibiogram, name='fullabg'),
+    url(r'^static/(<path>)$', serve, {'document_root': settings.STATIC_URL,})
 ]
