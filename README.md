@@ -6,5 +6,6 @@ Commands for Deployment
 git clone https://github.com/raptor419/amr-dashboard
 cd amr-dashboard
 source ./venv/bin/activate
-python amrdashboard/manage.py runserver
+pip3 install -r ../requirements.txt
+python3 amrdashboard/manage.py runserver
 ```
