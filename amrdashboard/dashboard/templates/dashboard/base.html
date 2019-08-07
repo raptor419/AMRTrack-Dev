@@ -33,7 +33,7 @@
             <ul class="nav navbar-nav navbar-left">
                 {% if user.is_authenticated %}
                 <li><a href="/dashboard/active">Antibiogram</a></li>
-                <li><a href="/dashboard/active">Exploratory Analysis</a></li>
+                <li><a href="/dashboard/explore">Exploratory Analysis</a></li>
                 <li><a href="/dashboard/active">ML Inference</a></li>
                 {% endif %}
             </ul>
@@ -50,7 +50,7 @@
                 {% if user.is_authenticated %}
 
                 <li><a>Hello {{user}}</a></li>
-                <li><a href="/dashboard/addpath/">Manage Path Tests</a></li>
+                <li><a href="/dashboard/viewdata/">Manage Path Tests</a></li>
                 <li><a href="/dashboard/logout/">Logout</a></li>
                 {% endif %}
             </ul>

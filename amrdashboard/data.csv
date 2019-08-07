@@ -1,5 +1,17 @@
-,meropenem,netilmicin,nitrofurantoin,penicillin,piperacillin_tazobactum,rifampicin,teicoplanin
-enterobacter,0.0,0.0,0.0,null,0.0,null,null
-enterococcus,null,null,0.0,100.0,null,null,100.0
-escherichia,44.44444444444444,44.44444444444444,66.66666666666666,null,100.0,null,null
-klebsiella,87.5,88.88888888888889,50.0,null,77.77777777777779,null,null
+,amikacin,amoxicillin_clavulanicacid,ampicillin,ampicillin_sulbactum,cefaperazone_sulbactum,cefexime,cefotaxime,cefoxitin,ceftazidime,ceftazidime_clavalunicacid,ceftriaxone,chloramphenicol,ciprofloxacin,colistin,cotrimoxazole,ertapenem,erythromycin,gentamicin_highlevel,imipenem,levofloxacin,linezolid,meropenem,netilmicin,nitrofurantoin,penicillin,piperacillin_tazobactum,rifampicin,teicoplanin,tetracycline,ticarcillin_clavulanicacid,tigecycline,vancomycin
+acinetobacter,95.27027027027027,95.58823529411765,100.0,100.0,15.54054054054054,null,94.44444444444444,null,96.57534246575342,null,null,83.33333333333334,92.7007299270073,0.0,null,null,null,null,88.57142857142857,100.0,null,84.28571428571429,86.95652173913044,100.0,100.0,90.54054054054053,null,null,null,null,0.0,null
+citrobacter,80.0,100.0,null,null,60.0,null,80.0,null,80.0,null,null,null,80.0,0.0,null,null,null,null,40.0,null,null,60.0,66.66666666666666,null,null,40.0,null,null,null,null,null,null
+coagulase negative staphylococcus,50.0,36.36363636363637,null,null,null,null,null,53.84615384615385,null,null,null,null,53.84615384615385,null,53.84615384615385,null,85.71428571428571,null,null,null,0.0,null,0.0,null,91.66666666666666,null,null,0.0,null,null,null,0.0
+enterobacter,42.857142857142854,75.0,null,null,21.428571428571427,null,58.333333333333336,null,76.92307692307693,null,100.0,100.0,35.714285714285715,0.0,null,null,null,null,33.33333333333333,null,null,36.36363636363637,63.63636363636363,0.0,null,28.57142857142857,null,null,null,null,null,null
+enterococcus,0.0,null,null,null,0.0,null,100.0,null,100.0,null,null,null,90.9090909090909,null,null,null,87.5,90.0,0.0,null,0.0,0.0,null,0.0,77.77777777777779,0.0,null,40.0,66.66666666666666,null,null,40.0
+escherichia,59.375,96.22641509433963,null,null,60.9375,100.0,95.0,null,95.08196721311475,null,100.0,0.0,93.54838709677419,0.0,null,null,null,null,21.052631578947366,null,null,45.614035087719294,57.692307692307686,42.857142857142854,null,76.5625,null,null,null,null,0.0,100.0
+klebsiella,75.96153846153845,89.87341772151899,null,null,63.10679611650486,100.0,88.77551020408163,null,87.12871287128714,100.0,100.0,37.5,74.75728155339806,0.0,null,100.0,null,null,47.0,100.0,null,62.62626262626263,78.3132530120482,57.14285714285714,null,66.01941747572816,null,100.0,0.0,null,0.0,0.0
+methicillin sensitive staphylococcus aureus(mssa),0.0,null,null,null,null,null,null,0.0,null,null,null,null,100.0,null,0.0,null,0.0,null,null,null,0.0,null,null,null,100.0,null,null,0.0,null,null,null,0.0
+pantoea aggiomeroms (prevously enterobacter),null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null
+pseudomonas,42.038216560509554,81.81818181818183,null,null,17.532467532467532,null,44.44444444444444,100.0,38.21656050955414,null,100.0,50.0,37.5,0.0,50.0,null,null,null,41.30434782608695,100.0,null,46.52777777777778,25.0,100.0,null,29.559748427672954,null,null,null,null,100.0,null
+serratia marcescens,0.0,null,null,null,0.0,0.0,0.0,null,0.0,null,null,null,0.0,0.0,null,null,null,null,0.0,null,null,0.0,null,null,null,0.0,null,null,null,null,null,null
+staphyloccus hemolyticus (ms-cons),0.0,0.0,null,null,null,null,null,0.0,null,null,null,null,0.0,null,0.0,null,100.0,null,null,null,0.0,null,0.0,null,50.0,null,null,0.0,null,null,null,0.0
+staphylococcus aureus,0.0,50.0,null,null,null,null,null,8.333333333333332,null,null,100.0,null,75.0,null,8.333333333333332,null,63.63636363636363,null,null,null,0.0,null,0.0,null,84.61538461538461,null,0.0,0.0,null,null,null,0.0
+staphylococcus aureus(mssa),0.0,0.0,null,null,null,null,null,0.0,null,null,null,null,100.0,null,66.66666666666666,null,66.66666666666666,null,null,null,0.0,null,0.0,null,66.66666666666666,null,null,0.0,null,null,null,0.0
+staphylococcus epidermidis,50.0,50.0,null,null,null,null,null,0.0,null,null,null,null,0.0,null,100.0,null,0.0,null,null,null,0.0,null,50.0,null,0.0,null,null,0.0,null,null,null,0.0
+stenotnophomonas maltophilia,null,null,null,null,null,null,null,null,100.0,null,null,null,null,null,0.0,null,null,null,null,0.0,null,null,null,null,null,0.0,null,null,null,0.0,null,null

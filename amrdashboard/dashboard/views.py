@@ -1,9 +1,9 @@
 # Django
-import django_tables2 as tables
 from django.contrib.auth import authenticate, login, logout
-from django.contrib.auth.models import User
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
+from django.conf import settings
+
 
 from .forms import *
 # Models
@@ -17,11 +17,12 @@ from .scripts.googlelogin import *
 
 
 # Add Google API Keys for Google login
-GOOGLE_API_APP_ID = ''
-GOOGLE_API_APP_SECRET = ''
+GOOGLE_API_APP_ID = '110416131256-56k6c0uh1pap9fn4f92f4m0mffkeb6ge.apps.googleusercontent.com'
+GOOGLE_API_APP_SECRET = '02aelsX-ew-_15ZJt7cR7G8b'
 
 getGoogle = GoogleLogin(GOOGLE_API_APP_ID, GOOGLE_API_APP_SECRET)
 profile_track = None
+
 
 def index(request):
     print("index: " + str(request.user))
@@ -178,17 +179,20 @@ def active(request):
                 print(input_form.cleaned_data['org'])
                 print(input_form.cleaned_data['startdate'])
                 print(input_form.cleaned_data['enddate'])
-                table = generate_anitbiogram(ams=input_form.cleaned_data['ams'], organisms=input_form.cleaned_data['org'],
-                                     colltypes=input_form.cleaned_data['col'], sites=input_form.cleaned_data['site'],
-                                     startdate=input_form.cleaned_data['startdate'], enddate=input_form.cleaned_data['enddate'])
+                table = generate_anitbiogram(ams=input_form.cleaned_data['ams'],
+                                             organisms=input_form.cleaned_data['org'],
+                                             colltypes=input_form.cleaned_data['col'],
+                                             sites=input_form.cleaned_data['site'],
+                                             startdate=input_form.cleaned_data['startdate'],
+                                             enddate=input_form.cleaned_data['enddate'])
                 # print(table)
-                # table.to_csv('data.csv')
+                table.to_csv('data.csv')
                 json = table.to_json(orient="split")
                 tablehtml = table.to_html()
                 # json = table.to_json(orient="split")
-                # csv = pd.read_csv("bargraph.csv").to_json()
-                return render(request, 'dashboard/active.html',
-                              {'form': input_form, 'registered': created, 'table': tablehtml, 'json':json})
+                csv = pd.read_csv("bargraph.csv").to_json(orient='records')
+                return render(request, 'dashboard/active2.html',
+                              {'form': input_form, 'registered': created, 'table': tablehtml, 'json': json, 'csv': csv})
 
             else:
                 print(input_form.errors)
@@ -199,7 +203,8 @@ def active(request):
             input_form.fields['col'].choices = [(x, x) for x in COLLTYPES]
             input_form.fields['org'].choices = [(x, x) for x in ORGANISMS]
 
-    return render(request, 'dashboard/active.html', {'form': input_form, 'registered': created, 'table': table,'json':json})
+    return render(request, 'dashboard/active.html',
+                  {'form': input_form, 'registered': created, 'table': table, 'json': json})
 
 
 def pathtestcreate(request):
@@ -245,7 +250,7 @@ def complete_antibiogram(request):
         for org in cdf.index.values:
             # print(amr, org)
             abg.at[org, amr] = getcdfat(cdf, org, 1) / (
-                        getcdfat(cdf, org, 1) + getcdfat(cdf, org, 0) + getcdfat(cdf, org, 2))
+                    getcdfat(cdf, org, 1) + getcdfat(cdf, org, 0) + getcdfat(cdf, org, 2))
     abg = abg.fillna('?')
     print(abg)
     tdf = tdf.apply(lambda _tdf: _tdf.sort_values(by=['testid']))
@@ -270,7 +275,7 @@ def generate_anitbiogram(organisms, colltypes, sites, ams, startdate, enddate):
             # print(amr, org)
             try:
                 abg.at[org, amr] = getcdfat(cdf, org, 1) / (
-                    getcdfat(cdf, org, 1) + getcdfat(cdf, org, 0) + getcdfat(cdf, org, 2))*100.0
+                        getcdfat(cdf, org, 1) + getcdfat(cdf, org, 0) + getcdfat(cdf, org, 2)) * 100.0
             except ZeroDivisionError:
                 abg.at[org, amr] = 'null'
     abg = abg.fillna('null')
@@ -278,12 +283,117 @@ def generate_anitbiogram(organisms, colltypes, sites, ams, startdate, enddate):
     return (abg)
 
 
+def exploraotry_analysis(request):
+    if str(request.user) == "AnonymousUser":
+        profile_track = None
+    if not request.user.is_active:
+        if request.GET.items():
+            if profile_track == 'google':
+                code = request.GET['code']
+                state = request.GET['state']
+                getGoogle.get_access_token(code, state)
+                userInfo = getGoogle.get_user_info()
+                username = userInfo['given_name'] + userInfo['family_name']
+
+                try:
+                    user = User.objects.get(username=username + '_google')
+                except User.DoesNotExist:
+                    new_user = User.objects.create_user(username + '_google', username + '@madewithgoogleplus',
+                                                        'password')
+                    new_user.save()
+
+                    try:
+                        profile = GoogleProfile.objects.get(user=new_user.id)
+                        profile.access_token = getGoogle.access_token
+                    except:
+                        profile = GoogleProfile()
+                        profile.user = new_user
+                        profile.google_user_id = userInfo['id']
+                        profile.access_token = getGoogle.access_token
+                        profile.profile_url = userInfo['link']
+                    profile.save()
+                user = authenticate(username=username + '_google', password='password')
+                login(request, user)
+    else:
+        created = True
+        tsv = False
+        table = False
+        if request.GET.items():
+            user = User.objects.get(username=request.user.username)
+        if request.method == 'POST':
+            input_form = InputDataForm(data=request.POST)
+            input_form.fields['ams'].choices = [(x, x) for x in ANTIMICROBIALS]
+            input_form.fields['org'].choices = [(x, x) for x in ORGANISMS]
+            if input_form.is_valid():
+                if not input_form.cleaned_data['ams']:
+                    input_form.cleaned_data['ams'] = ANTIMICROBIALS
+                if not input_form.cleaned_data['org']:
+                    input_form.cleaned_data['org'] = ORGANISMS
+                print(input_form.cleaned_data['ams'])
+                print(input_form.cleaned_data['org'])
+                graph = generate_graph(organisms=input_form.cleaned_data['org'], ams=input_form.cleaned_data['ams'], )
+                print(graph)
+                print(settings.FILE_DIR)
+                graph.to_csv(settings.FILE_DIR+'/linegraph.tsv', sep='\t')
+                table = graph.to_html()
+                json = graph.to_json(orient='records',date_format='iso')
+                return render(request, 'dashboard/explore.html',
+                              {'form': input_form, 'registered': created, 'table':table, 'json': json})
+
+            else:
+                print(input_form.errors)
+        else:
+            input_form = InputDataForm()
+            input_form.fields['ams'].choices = [(x, x) for x in ANTIMICROBIALS]
+            input_form.fields['site'].choices = [(x, x) for x in SITES]
+            input_form.fields['col'].choices = [(x, x) for x in COLLTYPES]
+            input_form.fields['org'].choices = [(x, x) for x in ORGANISMS]
+
+        return render(request, 'dashboard/explore.html',
+                      {'form': input_form, 'registered': created, 'table': table})
+
+
 def view_data(request):
     return render(request, 'dashboard/viewdata.html')
 
+
+def generate_graph(organisms, ams=ANTIMICROBIALS):
+    df = getdatatable()
+    df['date'] = pd.to_datetime(df['date'])
+    print(organisms)
+    print(ams)
+    fields = ['date'] + ams
+    print(fields)
+    df = df[df.organism.isin(organisms)][fields]
+    df.index = df.date
+    dfr = df.replace(-1, 0)
+    dfr = dfr.replace(2, 0)
+    dfr = dfr.resample('M').sum()
+    dfi = df.replace(-1, 0)
+    dfi = dfi.replace(1, 0)
+    dfi = dfi.replace(2, 1)
+    dfi = dfi.resample('M').sum()
+    dfs = df.replace(0, 3)
+    dfs = dfs.replace(-1, 0)
+    dfs = dfs.replace(2, 0)
+    dfs = dfs.replace(1, 0)
+    dfs = dfs.replace(3, 1)
+    dfs = dfs.resample('M').sum()
+    dff = dfr/(dfi+dfr+dfs)*100
+    dff = dff.replace(np.nan,'')
+    dff = dff
+    # tdf = tdf.apply(lambda _tdf: _tdf.sort_values(by=['date']))
+    # df['date'] = str(df['date'])
+    print(dff)
+    return dff
 
 def getcdfat(cdf, a, b):
     try:
         return cdf.at[a, b]
     except KeyError:
         return 0
+
+def rcount(series):
+    print(series)
+    return (series.values == 1).sum()
+

@@ -19,8 +19,9 @@
 <div class="container">
     {% if user.is_authenticated %}
     <h1>Database Data</h1>
-    <iframe id="encoder_iframe" height="100%" width="100%" src="{% url 'viewdataraw' %}">
+    <iframe id="encoder_iframe" height="500 px" width="100%" src="{% url 'viewdataraw' %}">
     </iframe>
+    <h2> User not authorized to edit data</h2>
 
     {% else %}
     <h1>AMR Track</h1>

@@ -59,7 +59,6 @@ table td {
     <div class='container'>
         <br>
          {% csrf_token %}
-        {{ form.keywords|as_crispy_field }}
         <div class="row">
             <div class="col-md-3 scroll1">{{ form.ams|as_crispy_field }}</div>
             <div class="col-md-3">

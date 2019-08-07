@@ -243,7 +243,7 @@ function heatmap_display(data, heatmapId, paletteName) {
         legend.append("text")
             .attr("class", "mono legendElement")
             .text(function(d) {
-                return "<" + Math.round(d * 100) / 100;
+                return "" + Math.round(d * 100) / 100;
             })
             .attr("x", function(d, i) {
                 return legendElementWidth * i;

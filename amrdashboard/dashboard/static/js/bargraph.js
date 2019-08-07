@@ -10,8 +10,6 @@ var viewerWidth = $(document).width() / 1.3;
 var viewerHeight = $(document).height() / 1;
 var viewerPosTop = 200;
 var viewerPosLeft = 100;
-var width = viewerWidth
-var height = viewerWidth
 
 function bargraph_display(csv, bargraphId) {
     console.log(csv)
@@ -19,21 +17,34 @@ function bargraph_display(csv, bargraphId) {
     function convertToCSV(objArray) {
         var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
         var str = '';
-
         for (var i = 0; i < array.length; i++) {
             var line = '';
             for (var index in array[i]) {
                 if (line != '') line += ','
-
                 line += array[i][index];
             }
-
             str += line + '\r\n';
         }
-
         return str;
     }
-    svg = d3.select(bargraphId).append("svg")
+
+    function csvToJSON(csv) {
+        var lines = csv.split("\n");
+        var result = [];
+        var headers = lines[0].split(",");
+        for (var i = 1; i < lines.length; i++) {
+            var obj = {};
+            var currentline = lines[i].split(",");
+            for (var j = 0; j < headers.length; j++) {
+                obj[headers[j]] = currentline[j];
+            }
+            result.push(obj);
+        }
+        //return result; //JavaScript object
+        return JSON.stringify(result); //JSON
+    }
+
+    var svg = d3.select(bargraphId).append("svg")
         .attr("width", viewerWidth)
         .attr("height", viewerHeight)
         .call(zoomListener)
@@ -50,6 +61,16 @@ function bargraph_display(csv, bargraphId) {
         .attr('d', 'M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2')
         .attr('stroke', '#000000')
         .attr('stroke-width', 1);
+    var margin = {
+            top: 20,
+            right: 20,
+            bottom: 30,
+            left: 40
+        },
+        width = +svg.attr("width") - margin.left - margin.right,
+        height = +svg.attr("height") - margin.top - margin.bottom,
+        g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 
     // set x scale
     var x = d3.scale.ordinal()
@@ -64,16 +85,21 @@ function bargraph_display(csv, bargraphId) {
         .range(["#98abc5", "#8a89a6", "#7b6888", "#6b486b", "#a05d56", "#d0743c", "#ff8c00"]);
     var csv1 = convertToCSV(csv)
     console.log(csv1)
-    // load the csv and create the chart
-    d3.csv(csv, function (d, i, columns) {
-        console.log(columns);
-        for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
-        d.total = t;
-        return d;
-    }, function (error, data) {
-        if (error) throw error;
+    render(csv);
 
-        var keys = data.columns.slice(1);
+    function render(data) {
+        // fix pre-processing
+        var keys = [];
+        for (key in data[0]) {
+            if (key != "State")
+                keys.push(key);
+        }
+        data.forEach(function (d) {
+            d.total = 0;
+            keys.forEach(function (k) {
+                d.total += d[k];
+            })
+        });
 
         data.sort(function (a, b) {
             return b.total - a.total;
@@ -85,42 +111,6 @@ function bargraph_display(csv, bargraphId) {
             return d.total;
         })]).nice();
         z.domain(keys);
-
-        g.append("g")
-            .selectAll("g")
-            .data(d3.stack().keys(keys)(data))
-            .enter().append("g")
-            .attr("fill", function (d) {
-                return z(d.key);
-            })
-            .selectAll("rect")
-            .data(function (d) {
-                return d;
-            })
-            .enter().append("rect")
-            .attr("x", function (d) {
-                return x(d.data.State);
-            })
-            .attr("y", function (d) {
-                return y(d[1]);
-            })
-            .attr("height", function (d) {
-                return y(d[0]) - y(d[1]);
-            })
-            .attr("width", x.bandwidth())
-            .on("mouseover", function () {
-                tooltip.style("display", null);
-            })
-            .on("mouseout", function () {
-                tooltip.style("display", "none");
-            })
-            .on("mousemove", function (d) {
-                console.log(d);
-                var xPosition = d3.mouse(this)[0] - 5;
-                var yPosition = d3.mouse(this)[1] - 5;
-                tooltip.attr("transform", "translate(" + xPosition + "," + yPosition + ")");
-                tooltip.select("text").text(d[1] - d[0]);
-            });
 
         g.append("g")
             .attr("class", "axis")
@@ -162,7 +152,7 @@ function bargraph_display(csv, bargraphId) {
             .text(function (d) {
                 return d;
             });
-    });
+    };
 
     // Prep the tooltip bits, initial display is hidden
     var tooltip = svg.append("g")

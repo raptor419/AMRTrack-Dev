@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+{% include 'dashboard/base.html' %}
+<style>
+    div.scroll1 {
+        overflow: scroll;
+        height: 35em;
+}
+    div.scroll2 {
+        overflow: scroll;
+        height: 20em;
+}
+    div.scroll3 {
+        overflow: scroll;
+        height: 15em;
+}
+    table {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  margin: 0;
+  padding: 0;
+  table-layout: fixed;
+  width: 100%;
+}
+
+table tr {
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  padding: .35em;
+}
+
+table th,
+table td {
+  padding: .625em;
+  text-align: center;
+}
+</style>
+<head>
+    <script src="http://d3js.org/d3.v3.js"></script>
+    <script src="http://d3js.org/colorbrewer.v1.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="/static/js/heatmap.js"></script>
+    <script src="/static/js/bargraph.js"></script>
+    <link rel="stylesheet" href="/static/css/heatmap.css" />
+
+</head>
+<body>
+{% load bootstrap4 %}
+{% load static %}
+{% load django_tables2 %}
+{% bootstrap_javascript jquery='full' %}  {# Embed Bootstrap JS+jQuery #}
+{{ form.media }}            {# Adds date-picker required JS and CSS #}
+<div class="container">
+    {% if user.is_authenticated %}
+    <h1>Antibiogram Dashboard</h1>
+    {% load crispy_forms_tags %}
+    <br>
+    <div>
+        Order:
+
+        Palette:
+        <select id="palette">
+          <option value="RdYlGn" selected>RdYlGn</option>
+          <option value="Spectral">Spectral</option>
+          <option value="RdYlBu">RdYlBu</option>
+          <option value="RdGy">RdGy</option>
+          <option value="RdBu">RdBu</option>
+          <option value="PiYG">PiYG</option>
+          <option value="PRGn">PRGn</option>
+          <option value="BrBG">BrBG</option>
+          <option value="PuOr">PuOr</option>
+        </select>
+    <script>
+        var mystring = '{{json|safe}}';
+        var root = JSON.parse(mystring);
+        console.log(root);
+
+        $(document).ready(function() {
+	heatmap_display(root, "#heatmap", "RdYlGn");
+    });
+    </script>
+    </div>
+     <script>var mystring = '{{csv|safe}}';
+        var j2 = JSON.parse(mystring);
+        console.log(j2);
+        $(document).ready(function() {
+	bargraph_display(j2, "#bargraph");
+    });
+    </script>
+    </div>
+    <div id="heatmap"></div>
+    <div id="bargraph"></div>
+    {% else %}
+    <h1>Antibiogram Dashboard</h1>
+    <strong>{{ boldmessage }}</strong><br/>
+    <h1> Login/Register to access AMR Track Suite </h1>
+    <a href="/dashboard/login/">
+        <button class="btn btn-lg btn-primary" type="submit">Login</button>
+    </a>
+    <a href="/dashboard/register/">
+        <button class="btn btn-lg btn-primary" type="submit">Register</button>
+    </a>
+    </br>    </br>
+    <div class="form-signin col-sm-4">
+        <a class="btn btn-block btn-social btn-google" href="/dashboard/google_login/">
+            <i class="fa fa-google"></i>
+            Sign in with Google
+        </a>
+    </div>
+    {% endif %}
+    <br>
+</div>
+</body>
+</html>
