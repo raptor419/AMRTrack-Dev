@@ -182,13 +182,13 @@ def active(request):
                                      colltypes=input_form.cleaned_data['col'], sites=input_form.cleaned_data['site'],
                                      startdate=input_form.cleaned_data['startdate'], enddate=input_form.cleaned_data['enddate'])
                 # print(table)
-                table.to_csv('data.csv')
+                # table.to_csv('data.csv')
                 json = table.to_json(orient="split")
                 tablehtml = table.to_html()
                 # json = table.to_json(orient="split")
-                csv = pd.read_csv("bargraph.csv").to_json()
+                # csv = pd.read_csv("bargraph.csv").to_json()
                 return render(request, 'dashboard/active.html',
-                              {'form': input_form, 'registered': created, 'table': tablehtml, 'json':json, 'csv':csv})
+                              {'form': input_form, 'registered': created, 'table': tablehtml, 'json':json})
 
             else:
                 print(input_form.errors)
