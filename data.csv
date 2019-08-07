@@ -1,0 +1,8 @@
+,ampicillin_sulbactum,cefaperazone_sulbactum,cefexime,cefoxitin,ceftazidime,ceftazidime_clavalunicacid,ceftriaxone
+acinetobacter,null,17.142857142857142,null,null,94.20289855072464,null,null
+citrobacter,null,50.0,null,null,100.0,null,null
+coagulase negative staphylococcus,null,null,null,60.0,null,null,null
+enterobacter,null,42.857142857142854,null,null,83.33333333333334,null,null
+enterococcus,null,null,null,null,null,null,null
+escherichia,null,55.172413793103445,null,null,96.55172413793103,null,100.0
+klebsiella,null,64.0,100.0,null,89.58333333333334,null,100.0
