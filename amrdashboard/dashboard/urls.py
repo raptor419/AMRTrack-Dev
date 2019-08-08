@@ -18,4 +18,5 @@ urlpatterns = [
     path('viewdataraw/', views.view_data_raw, name='viewdataraw'),
     path('fullabg/', views.complete_antibiogram, name='fullabg'),
     path('explore/', views.exploraotry_analysis, name='explore'),
+    path('wiser/', views.ml_analysis, name='wiser'),
 ]

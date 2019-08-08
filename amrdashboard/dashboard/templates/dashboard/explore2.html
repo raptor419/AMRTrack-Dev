@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+{% include 'dashboard/base.html' %}
+<style>
+    div.scroll1 {
+        overflow: scroll;
+        height: 15em;
+    }
+    table {
+  border: 1px solid #ccc;
+  border-collapse: collapse;
+  margin: 0;
+  padding: 0;
+  table-layout: fixed;
+  width: 100%;
+}
+
+table tr {
+  background-color: #f8f8f8;
+  border: 1px solid #ddd;
+  padding: .35em;
+}
+
+table th,
+table td {
+  padding: .625em;
+  text-align: center;
+}
+    .axis path,
+.axis line,
+.axis1 path,
+.axis1 line {
+  fill: none;
+  stroke: #E6E7E8;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path, .x.axis1 path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke-width: 1.5px;
+}
+
+.legend-box {
+  cursor: pointer;
+}
+
+#mouse-tracker {
+  stroke: #E6E7E8;
+  stroke-width: 1px;
+}
+
+.hover-line {
+  stroke: #E6E7E8;
+  fill: none;
+  stroke-width: 1px;
+  left: 10px;
+  shape-rendering: crispEdges;
+  opacity: 1e-6;
+}
+
+.hover-text {
+  stroke: none;
+  font-size: 30px;
+  font-weight: bold;
+  fill: #000000;
+}
+
+.tooltip {
+  font-weight: normal;
+}
+
+.brush .extent {
+  stroke: #FFF;
+  shape-rendering: crispEdges;
+}
+</style>
+<head>
+    <script src="http://d3js.org/d3.v3.js"></script>
+    <script src="http://d3js.org/colorbrewer.v1.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script src="/static/js/heatmap.js"></script>
+    <script src="/static/js/bargraph.js"></script>
+    <link rel="stylesheet" href="/static/css/heatmap.css" />
+
+</head>
+<body>
+{% load bootstrap4 %}
+{% load static %}
+{% load django_tables2 %}
+{% bootstrap_javascript jquery='full' %}  {# Embed Bootstrap JS+jQuery #}
+{{ form.media }}            {# Adds date-picker required JS and CSS #}
+<div class="container">
+    {% if user.is_authenticated %}
+    <h1>AMR History Graph</h1>
+    {% load crispy_forms_tags %}
+
+
+    <br>
+    <center>
+    <div class="row">
+    <div class="col-md-8">
+    <script src="/static/js/linegraph.js"></script><div class="linegraph"></div></div><div class="col-md-4"></div>
+    </center>
+    </div>
+    {% else %}
+    <h1>Antibiogram Dashboard</h1>
+    <strong>{{ boldmessage }}</strong><br/>
+    <h1> Login/Register to access AMR Track Suite </h1>
+    <a href="/dashboard/login/">
+        <button class="btn btn-lg btn-primary" type="submit">Login</button>
+    </a>
+    <a href="/dashboard/register/">
+        <button class="btn btn-lg btn-primary" type="submit">Register</button>
+    </a>
+    </br>    </br>
+    <div class="form-signin col-sm-4">
+        <a class="btn btn-block btn-social btn-google" href="/dashboard/google_login/">
+            <i class="fa fa-google"></i>
+            Sign in with Google
+        </a>
+    </div>
+    {% endif %}
+    <br>
+</div>
+</body>
+</html>

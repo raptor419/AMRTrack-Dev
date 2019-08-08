@@ -114,10 +114,14 @@ def google_login(request):
     global profile_track
     profile_track = 'google'
     google_url = getGoogle.get_authorize_url()
-    return HttpResponseRedirect(google_url)
+    return HttpResponseRedirect(REDIRECT_URL)
 
 
 def active(request):
+    input_form = False
+    created = True
+    table = False
+    json = False
     if str(request.user) == "AnonymousUser":
         profile_track = None
     if not request.user.is_active:
@@ -152,6 +156,7 @@ def active(request):
         created = True
         table = False
         json = False
+
         if request.GET.items():
             user = User.objects.get(username=request.user.username)
         if request.method == 'POST':
@@ -337,7 +342,7 @@ def exploraotry_analysis(request):
                 graph.to_csv(settings.FILE_DIR+'/linegraph.tsv', sep='\t')
                 table = graph.to_html()
                 json = graph.to_json(orient='records',date_format='iso')
-                return render(request, 'dashboard/explore.html',
+                return render(request, 'dashboard/explore2.html',
                               {'form': input_form, 'registered': created, 'table':table, 'json': json})
 
             else:
@@ -396,4 +401,7 @@ def getcdfat(cdf, a, b):
 def rcount(series):
     print(series)
     return (series.values == 1).sum()
+
+def ml_analysis(request):
+    return HttpResponse('<h1>wiseR access is locked for this user</h1><h2>For more details about wiseR visit <a href="https://github.com/SAFE-ICU/wiseR/">wiseR github</a>')
 

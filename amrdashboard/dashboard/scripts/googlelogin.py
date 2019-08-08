@@ -6,7 +6,7 @@ import requests
 
 AUTHORISE_URL = 'https://accounts.google.com/o/oauth2/auth'
 ACCESS_TOKEN_URL = 'https://accounts.google.com/o/oauth2/token'
-REDIRECT_URL = 'http://localhost:8000/dasboard/'
+REDIRECT_URL = 'http://localhost:8000/'
 PROFILE_API = 'https://www.googleapis.com/auth/plus.login'
 
 
