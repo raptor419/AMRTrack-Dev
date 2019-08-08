@@ -7,6 +7,6 @@ git clone https://github.com/raptor419/AMRTrack-Dev
 cd amr-dashboard
 source ./venv/bin/activate
 pip3 install -r ../requirements.txt
-cd amrdashboard
+cd AMRTrack-Dev
 python3 manage.py runserver
 ```
