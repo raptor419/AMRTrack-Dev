@@ -3,7 +3,7 @@
 
 Commands for Deployment
 ```
-git clone https://github.com/raptor419/amr-dashboard
+git clone https://github.com/raptor419/AMRTrack-Dev
 cd amr-dashboard
 source ./venv/bin/activate
 pip3 install -r ../requirements.txt
