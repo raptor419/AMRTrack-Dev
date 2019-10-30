@@ -95,20 +95,7 @@ table td {
     {% endblock %}
     <br>
     <div>
-        Order:
 
-        Palette:
-        <select id="palette">
-          <option value="RdYlGn" selected>RdYlGn</option>
-          <option value="Spectral">Spectral</option>
-          <option value="RdYlBu">RdYlBu</option>
-          <option value="RdGy">RdGy</option>
-          <option value="RdBu">RdBu</option>
-          <option value="PiYG">PiYG</option>
-          <option value="PRGn">PRGn</option>
-          <option value="BrBG">BrBG</option>
-          <option value="PuOr">PuOr</option>
-        </select>
     <script>
         var mystring = '{{json|safe}}';
         var root = JSON.parse(mystring);
@@ -116,6 +103,8 @@ table td {
 
         $(document).ready(function() {
 	heatmap_display(root, "#heatmap", "RdYlGn");
+	changePalette("RdYlGn", "#heatmap");
+	
     });
     </script>
     </div>

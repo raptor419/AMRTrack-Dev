@@ -1,0 +1,16 @@
+organism, All Antimicrobials,amikacin,amoxicillin_clavulanicacid,ampicillin,ampicillin_sulbactum,cefaperazone_sulbactum,cefexime,cefotaxime,cefoxitin,ceftazidime,ceftazidime_clavalunicacid,ceftriaxone,chloramphenicol,ciprofloxacin,colistin,cotrimoxazole,ertapenem,erythromycin,gentamicin_highlevel,imipenem,levofloxacin,linezolid,meropenem,netilmicin,nitrofurantoin,penicillin,piperacillin_tazobactum,rifampicin,teicoplanin,tetracycline,ticarcillin_clavulanicacid,tigecycline,vancomycin
+acinetobacter,254,7,3,0,0,117,0,7,0,5,0,0,1,9,53,0,0,0,0,14,0,0,20,3,0,0,13,0,0,0,0,2,0
+citrobacter,18,1,0,0,0,2,0,1,0,1,0,0,0,1,3,0,0,0,0,3,0,0,2,1,0,0,3,0,0,0,0,0,0
+coagulase negative staphylococcus,80,6,7,0,0,0,0,0,6,0,0,0,0,5,0,6,0,1,0,0,0,13,0,10,0,1,0,0,12,0,0,0,13
+enterobacter,73,8,2,0,0,11,0,5,0,3,0,0,0,9,5,0,0,0,0,8,0,0,7,4,1,0,10,0,0,0,0,0,0
+enterococcus,35,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,1,1,1,0,10,1,0,2,2,1,0,6,1,0,0,6
+escherichia,206,26,2,0,0,20,0,3,0,3,0,0,7,3,30,0,0,0,0,42,0,0,29,22,3,0,13,0,0,0,0,3,0
+klebsiella,321,25,8,0,0,33,0,11,0,13,0,0,5,24,57,0,0,0,0,53,0,0,36,18,2,0,29,0,0,1,0,5,1
+methicillin sensitive staphylococcus aureus(mssa),7,1,0,0,0,0,0,0,1,0,0,0,0,0,0,1,0,1,0,0,0,1,0,0,0,0,0,0,1,0,0,0,1
+pseudomonas,726,90,2,0,0,123,0,5,0,93,0,0,1,94,53,1,0,0,0,79,0,0,75,6,0,0,104,0,0,0,0,0,0
+serratia marcescens,17,2,0,0,0,2,1,1,0,2,0,0,0,2,1,0,0,0,0,2,0,0,2,0,0,0,2,0,0,0,0,0,0
+staphyloccus hemolyticus (ms-cons),19,2,2,0,0,0,0,0,2,0,0,0,0,2,0,2,0,0,0,0,0,2,0,2,0,1,0,0,2,0,0,0,2
+staphylococcus aureus,101,13,3,0,0,0,0,0,11,0,0,0,0,3,0,11,0,4,0,0,0,13,0,13,0,2,0,4,12,0,0,0,12
+staphylococcus aureus(mssa),24,3,3,0,0,0,0,0,3,0,0,0,0,0,0,1,0,1,0,0,0,3,0,3,0,1,0,0,3,0,0,0,3
+staphylococcus epidermidis,16,1,1,0,0,0,0,0,2,0,0,0,0,2,0,0,0,1,0,0,0,2,0,1,0,2,0,0,2,0,0,0,2
+stenotnophomonas maltophilia,6,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,2,0,0,0,0,0,1,0,0,0,1,0,0

@@ -224,7 +224,7 @@ function heatmap_display(data, heatmapId, paletteName) {
             .attr("class", "legend")
             .attr("transform", "translate(0,-300)")
             .selectAll(".legendElement")
-            .data([100, 90, 80, 70, 60, 50, 40, 30, 20, 10])
+            .data([0, 10, 20, 30, 40, 50, 60, 70, 80, 90])
             .enter().append("g")
             .attr("class", "legendElement");
 
@@ -388,7 +388,7 @@ function changeOrder(newOrder, heatmapId) {
 function changePalette(paletteName, heatmapId) {
     var colors = colorbrewer[paletteName][classesNumber];
     var colorScale = d3.scale.quantize()
-        .domain([100.0, 0.0])
+        .domain([0.0, 100.0])
         .range(colors);
     var svg = d3.select(heatmapId);
     var t = svg.transition().duration(500);

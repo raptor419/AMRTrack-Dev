@@ -1,40 +1,7 @@
 <!DOCTYPE html>
 <html>
 {% include 'dashboard/base.html' %}
-<style>
-    div.scroll1 {
-        overflow: scroll;
-        height: 35em;
-}
-    div.scroll2 {
-        overflow: scroll;
-        height: 20em;
-}
-    div.scroll3 {
-        overflow: scroll;
-        height: 15em;
-}
-    table {
-  border: 1px solid #ccc;
-  border-collapse: collapse;
-  margin: 0;
-  padding: 0;
-  table-layout: fixed;
-  width: 100%;
-}
 
-table tr {
-  background-color: #f8f8f8;
-  border: 1px solid #ddd;
-  padding: .35em;
-}
-
-table th,
-table td {
-  padding: .625em;
-  text-align: center;
-}
-</style>
 <head>
     <script src="http://d3js.org/d3.v3.js"></script>
     <script src="http://d3js.org/colorbrewer.v1.min.js"></script>
@@ -42,6 +9,9 @@ table td {
     <script src="/static/js/heatmap.js"></script>
     <script src="/static/js/bargraph.js"></script>
     <link rel="stylesheet" href="/static/css/heatmap.css" />
+    <link rel="stylesheet" type="text/css" href="http://cdn.pydata.org/bokeh/release/bokeh-1.1.0.min.css"/>
+    <link rel="stylesheet" type="text/css" href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-1.1.0.min.css"/>
+    <link rel="stylesheet" type="text/css" href="http://cdn.pydata.org/bokeh/release/bokeh-tables-1.1.0.min.css"/>
 
 </head>
 <body>
@@ -50,31 +20,16 @@ table td {
 {% load django_tables2 %}
 {% bootstrap_javascript jquery='full' %}  {# Embed Bootstrap JS+jQuery #}
 {{ form.media }}            {# Adds date-picker required JS and CSS #}
+
+
 <div class="container">
     {% if user.is_authenticated %}
     <h1>Antibiogram Dashboard</h1>
     {% load crispy_forms_tags %}
     <br>
-    <div>
-    <script>
-        var mystring = '{{json|safe}}';
-        var root = JSON.parse(mystring);
-        console.log(root);
 
-        $(document).ready(function() {
-	heatmap_display(root, "#heatmap", "RdYlGn");
-	changePalette("RdYlGn", "#heatmap");
+    {{ table | safe }}
 
-    });
-        $(document).ready(function() {
-
-    });
-
-    </script>
-    </div>
-    </div>
-    <div id="heatmap"></div>
-    <div id="bargraph"></div>
     {% else %}
     <h1>Antibiogram Dashboard</h1>
     <strong>{{ boldmessage }}</strong><br/>
@@ -96,4 +51,10 @@ table td {
     <br>
 </div>
 </body>
+
+    <script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-1.1.0.min.js"></script>
+    <script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-1.1.0.min.js"></script>
+    <script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-tables-1.1.0.min.js"></script>
+    <script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-api-1.1.0.min.js"></script>
+    {{ script | safe }}
 </html>

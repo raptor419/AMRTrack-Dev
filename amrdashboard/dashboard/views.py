@@ -4,12 +4,18 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.conf import settings
 
-
 from .forms import *
 # Models
 from .models import *
 from .scripts.biotable import *
 from .scripts.googlelogin import *
+from .scripts.viewmethods import *
+from .scripts.bokeh import *
+
+from bokeh.embed import components
+import pandas as pd
+import pandas_bokeh
+
 
 # Python
 
@@ -45,7 +51,7 @@ def index(request):
                     new_user.save()
 
                     try:
-                        profle = GoogleProfile.objects.get(user=new_user.id)
+                        profile = GoogleProfile.objects.get(user=new_user.id)
                         profile.access_token = getGoogle.access_token
                     except:
                         profile = GoogleProfile()
@@ -262,32 +268,6 @@ def complete_antibiogram(request):
     return HttpResponse(abg)
 
 
-def generate_anitbiogram(organisms, colltypes, sites, ams, startdate, enddate):
-    df = getdatatable()
-    df['date'] = pd.to_datetime(df['date'])
-    fields = ['testid', 'collsite', 'sampletype', 'organism'] + ams
-    df = df[df.organism.isin(organisms) & df.sampletype.isin(colltypes) & df.collsite.isin(sites) & (
-            (df['date'] > startdate) & (df['date'] <= enddate))][fields]
-    tdf = df.groupby(['organism'])
-    # tdf = tdf.apply(lambda _tdf: _tdf.sort_values(by=['testid']))
-    # tdf = tdf[ANTIMICROBIALS]
-    # # tdf = tdf.apply(pd.value_counts)
-    abg = pd.DataFrame(index=organisms, columns=ams)
-    abg = abg.fillna('null')
-    for amr in ams:
-        cdf = tdf[amr].value_counts().unstack(fill_value=0)
-        for org in cdf.index.values:
-            # print(amr, org)
-            try:
-                abg.at[org, amr] = getcdfat(cdf, org, 1) / (
-                        getcdfat(cdf, org, 1) + getcdfat(cdf, org, 0) + getcdfat(cdf, org, 2)) * 100.0
-            except ZeroDivisionError:
-                abg.at[org, amr] = 'null'
-    abg = abg.fillna('null')
-    tdf = tdf.apply(lambda _tdf: _tdf.sort_values(by=['testid']))
-    return (abg)
-
-
 def exploraotry_analysis(request):
     if str(request.user) == "AnonymousUser":
         profile_track = None
@@ -362,35 +342,137 @@ def view_data(request):
     return render(request, 'dashboard/viewdata.html')
 
 
-def generate_graph(organisms, ams=ANTIMICROBIALS):
-    df = getdatatable()
-    df['date'] = pd.to_datetime(df['date'])
-    print(organisms)
-    print(ams)
-    fields = ['date'] + ams
-    print(fields)
-    df = df[df.organism.isin(organisms)][fields]
-    df.index = df.date
-    dfr = df.replace(-1, 0)
-    dfr = dfr.replace(2, 0)
-    dfr = dfr.resample('M').sum()
-    dfi = df.replace(-1, 0)
-    dfi = dfi.replace(1, 0)
-    dfi = dfi.replace(2, 1)
-    dfi = dfi.resample('M').sum()
-    dfs = df.replace(0, 3)
-    dfs = dfs.replace(-1, 0)
-    dfs = dfs.replace(2, 0)
-    dfs = dfs.replace(1, 0)
-    dfs = dfs.replace(3, 1)
-    dfs = dfs.resample('M').sum()
-    dff = dfr/(dfi+dfr+dfs)*100
-    dff = dff.replace(np.nan,'')
-    dff = dff
-    # tdf = tdf.apply(lambda _tdf: _tdf.sort_values(by=['date']))
-    # df['date'] = str(df['date'])
-    print(dff)
-    return dff
+
+def bokeh(request):
+    input_form = False
+    created = True
+    table = False
+    json = False
+    if str(request.user) == "AnonymousUser":
+        profile_track = None
+    if not request.user.is_active:
+        if request.GET.items():
+            if profile_track == 'google':
+                code = request.GET['code']
+                state = request.GET['state']
+                getGoogle.get_access_token(code, state)
+                userInfo = getGoogle.get_user_info()
+                username = userInfo['given_name'] + userInfo['family_name']
+
+                try:
+                    user = User.objects.get(username=username + '_google')
+                except User.DoesNotExist:
+                    new_user = User.objects.create_user(username + '_google', username + '@madewithgoogleplus',
+                                                        'password')
+                    new_user.save()
+
+                    try:
+                        profile = GoogleProfile.objects.get(user=new_user.id)
+                        profile.access_token = getGoogle.access_token
+                    except:
+                        profile = GoogleProfile()
+                        profile.user = new_user
+                        profile.google_user_id = userInfo['id']
+                        profile.access_token = getGoogle.access_token
+                        profile.profile_url = userInfo['link']
+                    profile.save()
+                user = authenticate(username=username + '_google', password='password')
+                login(request, user)
+    else:
+        created = True
+        table = False
+        json = False
+
+        if request.GET.items():
+            user = User.objects.get(username=request.user.username)
+        if request.method == 'POST':
+            input_form = InputDataForm(data=request.POST)
+            input_form.fields['ams'].choices = [(x, x) for x in ANTIMICROBIALS]
+            input_form.fields['site'].choices = [(x, x) for x in SITES]
+            input_form.fields['col'].choices = [(x, x) for x in COLLTYPES]
+            input_form.fields['org'].choices = [(x, x) for x in ORGANISMS]
+            if input_form.is_valid():
+                if not input_form.cleaned_data['ams']:
+                    input_form.cleaned_data['ams'] = ANTIMICROBIALS
+                if not input_form.cleaned_data['site']:
+                    input_form.cleaned_data['site'] = SITES
+                if not input_form.cleaned_data['col']:
+                    input_form.cleaned_data['col'] = COLLTYPES
+                if not input_form.cleaned_data['org']:
+                    input_form.cleaned_data['org'] = ORGANISMS
+                if not input_form.cleaned_data['startdate']:
+                    input_form.cleaned_data['startdate'] = '01-01-1900'
+                if not input_form.cleaned_data['enddate']:
+                    input_form.cleaned_data['enddate'] = '01-01-2100'
+                print(input_form.cleaned_data['ams'])
+                print(input_form.cleaned_data['site'])
+                print(input_form.cleaned_data['col'])
+                print(input_form.cleaned_data['org'])
+                print(input_form.cleaned_data['startdate'])
+                print(input_form.cleaned_data['enddate'])
+                dfr,dfs,dfi = get_rsi(ams=input_form.cleaned_data['ams'],
+                                             organisms=input_form.cleaned_data['org'],
+                                             colltypes=input_form.cleaned_data['col'],
+                                             sites=input_form.cleaned_data['site'],
+                                             startdate=input_form.cleaned_data['startdate'],
+                                             enddate=input_form.cleaned_data['enddate'])
+
+                # create a new plot
+                dft = dfi + dfr + dfs
+                dff = dfs / (dft) * 100
+                dff = dff.replace(np.nan, 'Data Not Available')
+
+
+                dfb = dff[' All Antimicrobials']
+
+                hmap = heatmap(dff,dft, s_z="Sensivity")
+
+                pie2 = dfs.copy()
+                pie1 = pie2.transpose()
+                pie1 = pie1.drop(' All Antimicrobials')
+                pie2 = pie2.drop(' All Organisms')
+                pie1.to_csv('pie1.csv')
+                pie1 = pd.read_csv('pie1.csv')
+                p1 = pie1.plot_bokeh.pie(
+                            x="antimicrobials",
+                            # y=" All Antimicrobials",
+                            title="Organisms vs Sensitive Drugs",
+                            show_figure=False,
+                            # return_html=True,
+                            figsize=(1200,800),
+                            zooming = True,
+                        )
+
+                pie2.to_csv('pie2.csv')
+                pie2 = pd.read_csv('pie2.csv')
+                p2 = pie2.plot_bokeh.pie(
+                    x="organism",
+                    # y=" All Antimicrobials",
+                    title="Drugs vs Organisms",
+                    show_figure=False,
+                    # return_html=True,
+                    figsize=(1200, 800),
+                    zooming=True,
+                )
+
+                script1, div1 = components(hmap)
+                script2, div2 = components(p1)
+                script3, div3 = components(p2)
+
+                return render(request, 'dashboard/bokeh.html',
+                              {'table': div1+'</br>'+div2+'</br>'+div3, 'script': script1+script2+script3})
+
+            else:
+                print(input_form.errors)
+        else:
+            input_form = InputDataForm()
+            input_form.fields['ams'].choices = [(x, x) for x in ANTIMICROBIALS]
+            input_form.fields['site'].choices = [(x, x) for x in SITES]
+            input_form.fields['col'].choices = [(x, x) for x in COLLTYPES]
+            input_form.fields['org'].choices = [(x, x) for x in ORGANISMS]
+
+    return render(request, 'dashboard/active.html',
+                  {'form': input_form, 'registered': created, 'table': table, 'json': json})
 
 def getcdfat(cdf, a, b):
     try:
