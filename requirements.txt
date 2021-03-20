@@ -12,7 +12,7 @@ django-pandas==0.6.1
 django-tables2-bootstrap4==2.0.0b5
 httplib2==0.13.1
 idna==2.8
-Jinja2==2.10.3
+Jinja2==2.11.3
 MarkupSafe==1.1.1
 numpy==1.17.0
 oauth2==1.9.0.post1
